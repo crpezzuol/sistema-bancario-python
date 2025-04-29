@@ -33,10 +33,11 @@ def limpar_tela():
 def exibir_menu():
     limpar_tela()
     print(30*'=','Bem vindo ao  Banco Python', 30*'=','\n')
-    print(f'Limite:         R$ {limite_inicial:.2f}')
-    print(f'Saldo atual:    R$ {saldo:.2f}')
-    print(f'Saldo + Limite: R$ {saldo + limite_inicial:.2f}')
-    print(f'Número de saques: {numero_de_saques}\n')
+    print(f'Limite da Conta:         R$ {limite_inicial:.2f}')
+    print(f'Limite diário de saque:  R$ {limite_diario:.2f}')
+    print(f'Saldo atual:             R$ {saldo:.2f}')
+    print(f'Saldo + Limite:          R$ {saldo + limite_inicial:.2f}')
+    print(f'Número de saques:           {numero_de_saques}\n')
   
 # Definindo a função exibir_opcoes para exibir as opções do menu
 # e solicitar que o usuário selecione uma opção
