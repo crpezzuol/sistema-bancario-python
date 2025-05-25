@@ -1,5 +1,6 @@
 # Autor: Carlos Pezzuol
-# Data: 2025-04-21
+# Data: 2025-05-25
+# Versão: 2.0
 # Descrição: Sistema bancário simples em Python, com funcionalidades de depósito, saque e extrato.
 # O código utiliza funções para organizar as operações e melhorar a legibilidade.
 # O código foi escrito para ser executado em um terminal, e não possui interface gráfica.
