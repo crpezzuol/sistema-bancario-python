@@ -13,6 +13,8 @@
 # importando a biblioteca os para limpar a tela do terminal
 # e para verificar o sistema operacional
 import os
+from datetime import datetime, timedelta
+import pytz
 
 # Definindo as variáveis globais
 opcao = ''
@@ -23,6 +25,9 @@ limite = limite_inicial
 extrato = ''
 numero_de_saques = 0
 limite_de_saques = 3
+data_registro = ''
+data_atual = ''
+
 
 # Definindo a função limpar_tela para limpar a tela do terminal
 def limpar_tela():
@@ -62,7 +67,8 @@ def depositar(deposito):
         saldo += deposito
         if limite < limite_inicial:
             limite += deposito
-        extrato += f'Deposito: R$ {deposito:.2f}\n'
+        registrar_data()
+        extrato += f'{data_atual} Deposito: R$  {deposito:.2f}\n'
         print(f'Valor depositado:           R$ {deposito:.2f}')
         print('Deposito realizado com sucesso!', '\n')
         sair = input('Pressione qualquer tecla para continuar...')
@@ -76,7 +82,7 @@ def depositar(deposito):
 # Definindo a função sacar para realizar saques na conta do usuário
 # e atualizar o saldo, o extrato e o número de saques
 def sacar(saque):
-    global saldo, extrato, numero_de_saques,limite_diario
+    global saldo, extrato, numero_de_saques,limite_diario, data_atual
     limpar_tela()
     exibir_menu()
     print(40*'=',' Saque',40*'=','\n')
@@ -99,7 +105,8 @@ def sacar(saque):
         sacar_limite(saque)
     elif saque <= saldo and saque <= limite and numero_de_saques < limite_de_saques:
         saldo -= saque
-        extrato += f'Saque:    R$ {(saque*(-1)):.2f}\n'
+        registrar_data()
+        extrato += f'{data_atual} Saque:    R$ {(saque*(-1)):.2f}\n'
         numero_de_saques += 1
         print(f'Valor sacado: R$ {(saque*(-1)):.2f}')
         print('Saque realizado com sucesso!\n')
@@ -114,7 +121,8 @@ def sacar_limite(saque):
     if saque > saldo:
         sacar_limite = (input('Valor maior que o saldo! Você vai sacar do limite! (S/N) ').upper())
         if sacar_limite == 'S':
-            extrato += f'Saque:    R$ {(saque*(-1)):.2f}\n'
+            registrar_data() 
+            extrato += f'{data_atual} Saque:    R$ {(saque*(-1)):.2f}\n'
             numero_de_saques += 1
             print(f'Valor sacado: R$ {(saque*(-1)):.2f}')
             print(f'Valor utilizado do limite: R$ {saque - saldo:.2f}')
@@ -131,7 +139,14 @@ def exibir_extrato():
     print('Não foram realizadas movimentações.\n' if not extrato else extrato)
     print(88*'=','\n')
     sair = input('Pressione qualquer tecla para continuar...')
- 
+
+# Definindo a função registrar_data para registrar a data e hora da movimentação
+# e formatá-la para exibição no extrato
+def registrar_data():
+    global data_registro, data_atual
+    data_registro = datetime.now(pytz.timezone('America/Sao_Paulo'))
+    data_atual = data_registro.strftime('%d/%m/%Y  %H:%Mhs')
+
 # Início do programa
 # Exibindo o menu e as opções para o usuário
 while True:
