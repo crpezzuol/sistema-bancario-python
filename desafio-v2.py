@@ -12,9 +12,10 @@
 # e pode ser expandido para incluir mais funcionalidades, como transferências entre contas, consulta de saldo, etc.
 #
 # importando a biblioteca os para limpar a tela do terminal
-# e para verificar o sistema operacional
+# e para verificar o sistema operacional e a biblioteca datetime para trabalhar com datas e horas
+# e a biblioteca pytz para trabalhar com fusos horários
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 
 # Definindo as variáveis globais
@@ -26,13 +27,24 @@ limite = limite_inicial
 extrato = ''
 numero_de_saques = 0
 limite_de_saques = 3
+limite_movimentacao = 10
+movimentacoes = 0
+data_movimentacao = ''
 data_registro = ''
 data_atual = ''
-
+sai = ''
+data_movimentacao_hoje = ''
+data_hoje = ''
 
 # Definindo a função limpar_tela para limpar a tela do terminal
 def limpar_tela():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+def sair():
+    global sai
+    sai = input('Pressione qualquer tecla para continuar... ')
+    return sair
+
 
 # Definindo a função exibir_menu para exibir o menu principal do sistema bancário
 # e as informações da conta do usuário
@@ -69,49 +81,48 @@ def depositar(deposito):
         if limite < limite_inicial:
             limite += deposito
         registrar_data()
-        extrato += f'{data_atual} Deposito: R$  {deposito:.2f}\n'
+        extrato += f'{data_movimentacao} Deposito: R$ {deposito:.2f}\n'
         print(f'Valor depositado:           R$ {deposito:.2f}')
         print('Deposito realizado com sucesso!', '\n')
-        sair = input('Pressione qualquer tecla para continuar...')
+        sair()
         return saldo, extrato, limite
     else:
         deposito <= 0
         print('Valor inválido!')
         print('Valor menor ou igual a zero!')
-        sair = input('Pressione qualquer tecla para continuar...')
-
+        sair()
 # Definindo a função sacar para realizar saques na conta do usuário
 # e atualizar o saldo, o extrato e o número de saques
 def sacar(saque):
-    global saldo, extrato, numero_de_saques,limite_diario, data_atual
+    global saldo, extrato, numero_de_saques,limite_diario
     limpar_tela()
     exibir_menu()
     print(40*'=',' Saque',40*'=','\n')
     saque = float(input('Digite o valor do saque: R$ ',))
     if numero_de_saques >= limite_de_saques:
         print('Operação Falhou! Número de saques excedido!\n')
-        sair = input('Pressione qualquer tecla para continuar...')
+        sair()
     elif saque > limite_diario:
         print('Operação Falhou! Valor limite diário de saque excedido!\n')
-        sair = input('Pressione qualquer tecla para continuar...')
+        sair()
     elif saque <= 0:
         print('Valor inválido!')
         print('Valor menor ou igual a zero!')
-        sair = input('Pressione qualquer tecla para continuar...')
+        sair()
     elif saque > limite:
         print('Valor inválido!\n')
         print('Valor maior que o saldo + limite!\n')
-        sair = input('Pressione qualquer tecla para continuar...')
+        sair()
     elif saque > saldo:
         sacar_limite(saque)
     elif saque <= saldo and saque <= limite and numero_de_saques < limite_de_saques:
         saldo -= saque
         registrar_data()
-        extrato += f'{data_atual} Saque:    R$ {(saque*(-1)):.2f}\n'
-        numero_de_saques += 1
+        extrato += f'{data_movimentacao} Saque:    R$ {(saque*(-1)):.2f}\n'
+        numero_de_saques += 1 
         print(f'Valor sacado: R$ {(saque*(-1)):.2f}')
         print('Saque realizado com sucesso!\n')
-        sair = input('Pressione qualquer tecla para continuar...')
+        sair()
     else:
         print('Valor inválido!')
 
@@ -122,15 +133,15 @@ def sacar_limite(saque):
     if saque > saldo:
         sacar_limite = (input('Valor maior que o saldo! Você vai sacar do limite! (S/N) ').upper())
         if sacar_limite == 'S':
-            registrar_data() 
-            extrato += f'{data_atual} Saque:    R$ {(saque*(-1)):.2f}\n'
+            registrar_data()
+            extrato += f'{data_movimentacao} Saque:    R$ {(saque*(-1)):.2f}\n'
             numero_de_saques += 1
             print(f'Valor sacado: R$ {(saque*(-1)):.2f}')
             print(f'Valor utilizado do limite: R$ {saque - saldo:.2f}')
             limite -= (saque - saldo)
             saldo -= saque
             print('Saque realizado com sucesso!\n')
-            sair = input('Pressione qualquer tecla para continuar...')
+            sair()
 
 # Definindo a função exibir_extrato para exibir o extrato da conta do usuário
 # e as movimentações realizadas
@@ -139,14 +150,16 @@ def exibir_extrato():
     print(39*'=',' Extrato', 39*'=','\n')    
     print('Não foram realizadas movimentações.\n' if not extrato else extrato)
     print(88*'=','\n')
-    sair = input('Pressione qualquer tecla para continuar...')
-
-# Definindo a função registrar_data para registrar a data e hora da movimentação
-# e formatá-la para exibição no extrato
+    sair()
+ 
 def registrar_data():
-    global data_registro, data_atual
+    global data_registro, data_atual, data_movimentacao, data_movimentacao_hoje, data_hoje
     data_registro = datetime.now(pytz.timezone('America/Sao_Paulo'))
-    data_atual = data_registro.strftime('%d/%m/%Y  %H:%Mhs')
+    data_movimentacao = data_registro.strftime('%d/%m/%Y  %H:%Mhs')
+    data_atual = data_registro.strftime('%d/%m/%Y')
+    data_hoje = datetime.now(pytz.timezone('America/Sao_Paulo'))
+    data_movimentacao_hoje = data_hoje.strftime('%d/%m/%Y')
+
 
 # Início do programa
 # Exibindo o menu e as opções para o usuário
